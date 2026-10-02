@@ -1,0 +1,11 @@
+---
+description: Project operating rules for <Project Name>. Always follow AGENTS.md and the wiki session protocol before any task.
+alwaysApply: true
+---
+
+# <Project Name> agent rules
+
+1. Follow `AGENTS.md` at the repository root in full. Cursor loads it automatically; this rule exists so the wiki protocol below is never skipped.
+2. <If nested: Before editing anything under `<dir>/`, read that directory's `AGENTS.md`.>
+3. Session protocol: read `wiki/now.md` and `wiki/index.md` first; finish by updating `wiki/now.md`, appending to `wiki/log.md`, updating affected wiki pages, and running `python3 scripts/lint_wiki.py`.
+4. <The two or three project rules whose violation would be most costly.>

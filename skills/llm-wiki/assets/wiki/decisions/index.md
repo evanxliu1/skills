@@ -1,0 +1,6 @@
+# Decisions
+
+Dated records of choices, one per file, in the format **Context**, **Options considered**, **Decision**, **Consequences**, **Status** (template in [how to document](../guides/how-to-document.md#templates)). A record is never edited after acceptance except its status line; a change of mind is a new record that supersedes the old one. Standing instructions are summarised in [user directives](../product/user-directives.md).
+
+## {{DATE}}
+* [Adopt an LLM wiki plus AGENTS.md](./{{DATE}}-llm-wiki-documentation.md) — wiki/ in Open Knowledge Format as the agent-facing documentation and memory system.

@@ -1,0 +1,21 @@
+{
+  "name": "evanxliu1-skills",
+  "owner": {
+    "name": "Evan Liu"
+  },
+  "metadata": {
+    "description": "Personal Agent Skills for Claude Code and other coding agents.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "evan-skills",
+      "description": "All skills in this repository.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/llm-wiki"
+      ]
+    }
+  ]
+}

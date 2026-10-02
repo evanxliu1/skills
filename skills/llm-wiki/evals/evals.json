@@ -1,0 +1,17 @@
+{
+  "skill_name": "llm-wiki",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "set up this repo's documentation as an LLM wiki like my other project (OKF style, AGENTS.md + CLAUDE.md, the whole thing). it's just a small python cli. I use claude code and codex, not cursor. no domain folder needed, skip reviews too. greenfield is fine, there's barely any docs. go ahead without asking me anything else.",
+      "expected_output": "wiki/ with now, log, index, guides, product, system, ops, decisions, archive; AGENTS.md with session protocol and Karpathy guidelines; CLAUDE.md importing it; linter passing; CI lint step added; no cursor rule.",
+      "files": ["fixtures/greenfield-cli"]
+    },
+    {
+      "id": 2,
+      "prompt": "This potluck app's docs are a mess (README, docs/, a CLAUDE.md and a .cursorrules). Restructure everything into an agent-maintained LLM wiki with Open Knowledge Format conventions and a proper AGENTS.md for Claude Code, Codex and Cursor. Migrate the old docs (yes, archive them, I approve moving files). Include a domain folder for the potluck rules. Standing rules: never commit potluck.db, error messages must say what wasn't saved. Don't ask me questions, just do it and summarize.",
+      "expected_output": "Old docs archived verbatim with headers; facts distilled; README-vs-code contradiction (5 vs 3 mains) and missing 'drink' kind recorded; decisions for SQLite and email-identified hosts; CLAUDE.md/.cursorrules merged into AGENTS.md; cursor .mdc rule; linter passing.",
+      "files": ["fixtures/migrate-webapp"]
+    }
+  ]
+}

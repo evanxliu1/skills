@@ -1,0 +1,14 @@
+# Add to the job that already checks out the repository; any GitHub-hosted runner has Python 3.
+      - name: Lint wiki
+        run: python3 scripts/lint_wiki.py
+
+# If the repo has no suitable job, a standalone workflow (.github/workflows/wiki.yml):
+#
+# name: wiki
+# on: [push, pull_request]
+# jobs:
+#   lint:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - run: python3 scripts/lint_wiki.py
