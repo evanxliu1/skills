@@ -5,6 +5,7 @@ Agent Skills I use or have written, for Claude Code and other coding agents that
 | Skill | What it does |
 | --- | --- |
 | [llm-wiki](skills/llm-wiki/SKILL.md) | Sets up or migrates a repo's docs into an agent-maintained LLM wiki in Open Knowledge Format, with `AGENTS.md`/`CLAUDE.md`/Cursor wiring and a dependency-free linter in pre-commit and CI. |
+| [llm-wiki-audit](skills/llm-wiki-audit/SKILL.md) | Audits an existing LLM wiki: finds reversed decisions still stated as current (pages, `AGENTS.md`, "permanent" code comments), retires superseded records, merges duplicated facts, and asks you to settle conflicts. |
 
 ## Install
 
