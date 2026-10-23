@@ -76,11 +76,16 @@ Writing rules:
 
 Use relative markdown links (`../system/jobs.md`, `../../src/jobs.py`) so pages render on GitHub, in editors and in Obsidian. OKF also permits bundle-absolute links; this wiki does not use them because they break on GitHub. Link generously: a page with no inbound links is an orphan the linter reports. Link code and data by relative path from the page; link external references by URL and add them to `sources`.
 
+**Cite decisions, don't restate them.** A page or code comment that depends on a choice links to its decision record: `# Decision: wiki/decisions/2026-01-31-postgres-over-sqlite.md`. Never mark code "permanent" or "do not change" without that link. When the choice is reversed, the link is how the next agent finds every place to update, and the linter reports references to decisions that are superseded or gone.
+
 ## Create or update?
 
-Update when the concept already has a page, even if the page needs restructuring. Create when a durable concept has no owner (a concept mentioned on three pages but owned by none is the usual prompt). Never create a second page for the same concept under a different name; if a name changes, rename the file with `git mv`, fix links, and log it. Retire pages through the [archive policy](archive-policy.md), never by deletion.
+Update when the concept already has a page, even if the page needs restructuring. Create when a durable concept has no owner (a concept mentioned on three pages but owned by none is the usual prompt). Never create a second page for the same concept under a different name; if a name changes, rename the file with `git mv`, fix links, and log it. Retire pages through the [retention policy](archive-policy.md).
 
-When new information contradicts a page, write the contradiction down with dates and sources rather than silently replacing the old claim: "Until 2026-01-10 the plan required X; on 2026-01-10 the owner removed the requirement (see decision …)." Then update `status`/`stale_after` on whatever became false.
+When new information contradicts a page, rewrite the page to state the new truth. Do not keep the old claim alongside it; history belongs in the decision chain, `log.md` and git.
+- A changed decision: follow [superseding a decision](how-to-track-changes.md#superseding-a-decision).
+- A factual correction: fix it, bump `generated.at`, log an `Update`.
+- Unclear which claim is current: ask the user and record the answer. Do not pick silently.
 
 ## Indexes
 
@@ -111,6 +116,9 @@ generated: {by: <actor>, at: <UTC timestamp>}
 
 ## Decision
 <What was chosen, concretely.>
+
+## Supersedes
+<Only when this replaces an earlier choice: the old record (link if it still exists, else its filename in backticks) and one line on why it was dropped, so the rejected option is not proposed again. Also set `supersedes:` in frontmatter.>
 
 ## Consequences
 <What changes, what it costs, what to watch.>

@@ -54,7 +54,7 @@ For each live page that absorbs facts:
 
 - List the archived source in `sources`.
 - Carry over only facts that are still true; verify against code where cheap.
-- When sources disagree with each other or with the code, write the contradiction down with dates: "Until 2026-08-02 the plan required X; the code since commit abc123 does Y (see decision …)." Do not silently pick one.
+- When sources disagree with each other or with the code, resolve it rather than carrying both into a live page. Behavior: the code wins. A choice that changed over time: the live page states the current one, and a decision record (with a **Supersedes** line for the old choice) holds the why. Unclear which is current: list it for the user in the plan table and ask; do not pick silently.
 - Choices with reasoning found in old docs become `decisions/` records dated when the choice was made (from git history or the doc), marked as recorded retroactively.
 - Standing instructions found in old docs go into `product/user-directives.md` with their original date.
 

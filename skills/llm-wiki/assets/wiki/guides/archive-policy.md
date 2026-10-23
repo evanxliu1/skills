@@ -1,7 +1,7 @@
 ---
 type: Guide
-title: Archive policy
-description: What goes to wiki/archive, how it gets there, and the immutability rule for sources.
+title: Retention and archive policy
+description: How retired pages and superseded decisions leave the live wiki (deleted or archived), and the immutability rule for archived sources.
 status: stable
 tags: [guide, wiki, archive]
 generated:
@@ -9,15 +9,19 @@ generated:
   at: {{TIMESTAMP}}
 ---
 
-# Archive policy
+# Retention and archive policy
 
-`wiki/archive/` is the immutable raw-source layer of the LLM wiki. Nothing in the repository's documentation is ever deleted; it is archived here and superseded by a live page.
+Live pages state the current truth only. Retired material (a page another page fully replaces, a superseded decision record) leaves the live wiki in one of two ways, chosen once per repo and recorded in [user directives](../product/user-directives.md):
+
+- **Delete.** `git rm` it. Git history and the superseding page or record are the trace.
+- **Archive.** Move it to `wiki/archive/`, the immutable raw-source layer.
+
+Pre-wiki documents moved in during a migration are always archived, because the user chose to keep them.
 
 ## What belongs here
 
 - Pre-wiki documents (plans, briefs, audits, proposals, setup logs) moved verbatim when the wiki was adopted.
-- Wiki pages that a newer page fully replaces.
-- Superseded decision records are **not** moved; they stay in `decisions/` with `status: superseded by …` so the chain is visible in one place.
+- When the repo archives: wiki pages that a newer page fully replaces, and superseded decision records (`status: superseded`, `superseded_by` the new record).
 - Data artifacts and local state are never in the wiki; if they are gitignored, pages reference them by path and say so.
 
 ## How to archive
@@ -28,9 +32,16 @@ generated:
 4. Add the file to `archive/index.md` with what it was and what replaced it. Append a `Deprecate` entry to `log.md`.
 5. Fix inbound links in live pages and code (error messages, rendered reports) to point at the archived path or the new page.
 
+## How to delete
+
+1. Make sure the superseding page carries every fact from the retired one that is still true; a superseding decision names the old record in its **Supersedes** section.
+2. `git rm` the file and remove its index entry.
+3. Fix inbound links in live pages and code; the linter reports each one as broken.
+4. Append a `Deprecate` entry to `log.md` naming the deleted path in backticks (not a link) and what replaced it.
+
 ## Linting
 
-`scripts/lint_wiki.py` still requires frontmatter with `type` and `superseded_by` on archived pages and lists them in `archive/index.md`, but it does not report broken links inside archived bodies: those links describe where things were on the document's date.
+`scripts/lint_wiki.py` still requires frontmatter with `type` and `superseded_by` on archived pages and lists them in `archive/index.md`, but it does not report broken links inside archived bodies or `log.md`: those links describe where things were on their date.
 
 ## Reading the archive
 

@@ -1,0 +1,11 @@
+{
+  "skill_name": "llm-wiki-audit",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "audit and clean up this repo's wiki, we switched storage from sqlite to postgres back in june and I think the docs still say sqlite in places. delete old stuff rather than archiving it. you can edit code comments too. ask me anything you can't figure out.",
+      "expected_output": "Retention recorded as delete in user-directives. Postgres record gains a Supersedes section naming the SQLite record and why it was dropped; SQLite record git rm'd and removed from decisions/index.md. SQLite statements rewritten to Postgres in now.md, system/storage.md (inline 'Until 2026-06-15' history removed), system/architecture.md, ops/local-setup.md, user-directives row and AGENTS.md rule. src/store.py PERMANENT comment and src/cache.py citation rewritten to cite the Postgres record. Duplicated storage paragraph kept only in system/storage.md, architecture links to it. Rate-limit conflict (decision says 100/min, src/limits.py says 300) is asked about or left as an open question in now.md, not silently changed. One Lint entry in log.md; lint_wiki.py passes with no superseded/missing-decision warnings; live-page size reported before and after.",
+      "files": ["fixtures/reversed-decision"]
+    }
+  ]
+}

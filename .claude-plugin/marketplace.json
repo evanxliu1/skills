@@ -14,7 +14,8 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/llm-wiki"
+        "./skills/llm-wiki",
+        "./skills/llm-wiki-audit"
       ]
     }
   ]

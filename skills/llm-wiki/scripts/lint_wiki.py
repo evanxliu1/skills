@@ -1,16 +1,20 @@
 """Lint the wiki/ knowledge bundle (Open Knowledge Format conventions).
 
 Errors (exit 1): missing or empty frontmatter `type`, broken relative links
-(outside archive/, whose immutable bodies may cite paths that no longer exist),
-pages missing from their directory index, deprecated pages without
-`superseded_by`, malformed or out-of-order log headings, merge conflict markers.
+(outside archive/ and log.md, which describe the past and may cite paths that
+no longer exist), pages missing from their directory index, deprecated or
+superseded pages without `superseded_by`, malformed or out-of-order log
+headings, merge conflict markers, repository files (code comments, AGENTS.md)
+citing a decision record that no longer exists.
 Warnings: orphan pages (no inbound links), `stale_after` in the past,
-unfinished `TODO(llm-wiki)` scaffold markers.
+unfinished `TODO(llm-wiki)` scaffold markers, live pages or repository files
+citing a superseded, reversed or archived decision.
 Dependency-free on purpose; frontmatter is read with a tolerant line scanner.
 
 Usage: python3 scripts/lint_wiki.py [path/to/wiki]   (default: <repo>/wiki)
 """
 import re
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -18,6 +22,7 @@ from pathlib import Path
 RESERVED = {'index.md', 'log.md'}
 LINK = re.compile(r'(?<!\!)\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)')
 TODO = 'TODO(llm-wiki)'
+RETIRED = {'deprecated', 'superseded', 'reversed'}
 
 
 def frontmatter(text):
@@ -30,8 +35,43 @@ def frontmatter(text):
     for line in text[4:end].splitlines():
         match = re.match(r'^([A-Za-z_][\w-]*):\s*(.*)$', line)
         if match:
-            fields[match[1]] = match[2].strip().strip('"\'')
+            value = re.sub(r'\s+#.*$', '', match[2])
+            fields[match[1]] = value.strip().strip('"\'')
     return fields
+
+
+def retired_decision(fm):
+    return fm is not None and fm.get('type') == 'Decision' and fm.get('status') in RETIRED
+
+
+def decision_references(wiki, meta, errors, warnings):
+    """Check repository files outside the wiki that cite <wiki>/decisions/<file>.md."""
+    repo = wiki.parent
+    try:
+        listed = subprocess.run(['git', 'ls-files', '-z', '--cached', '--others', '--exclude-standard'],
+                                cwd=repo, capture_output=True, check=True).stdout.decode().split('\0')
+    except (OSError, subprocess.CalledProcessError):
+        return  # not a git checkout; nothing reliable to scan
+    ref = re.compile(re.escape(wiki.name) + r'/decisions/([\w.-]+\.md)')
+    for name in filter(None, listed):
+        path = repo / name
+        if wiki in path.parents or not path.is_file() or path.stat().st_size > 1_000_000:
+            continue
+        try:
+            text = path.read_text(encoding='utf-8')
+        except (UnicodeDecodeError, OSError):
+            continue
+        for lineno, line in enumerate(text.splitlines(), 1):
+            for target in ref.findall(line):
+                record = wiki / 'decisions' / target
+                where = f'{name}:{lineno}'
+                if record.exists():
+                    if retired_decision(meta.get(record.resolve())):
+                        warnings.append(f'{where}: cites superseded decision {target}; cite its replacement')
+                elif (wiki / 'archive' / target).exists():
+                    warnings.append(f'{where}: cites archived decision {target}; cite its replacement')
+                else:
+                    errors.append(f'{where}: cites missing decision {target}')
 
 
 def main(argv):
@@ -42,8 +82,10 @@ def main(argv):
     errors, warnings = [], []
     pages = sorted(wiki.rglob('*.md'))
     inbound = {p: 0 for p in pages}
+    texts = {p: p.read_text(encoding='utf-8') for p in pages}
+    meta = {p.resolve(): frontmatter(t) for p, t in texts.items()}
     for page in pages:
-        text = page.read_text(encoding='utf-8')
+        text = texts[page]
         rel = page.relative_to(wiki)
         if re.search(r'^(<<<<<<< |=======$|>>>>>>> )', text, flags=re.M):
             errors.append(f'{rel}: contains merge conflict markers')
@@ -54,8 +96,8 @@ def main(argv):
             else:
                 if not fm.get('type'):
                     errors.append(f'{rel}: frontmatter has no non-empty `type`')
-                if fm.get('status') == 'deprecated' and not fm.get('superseded_by'):
-                    errors.append(f'{rel}: deprecated without `superseded_by`')
+                if fm.get('status') in ('deprecated', 'superseded') and not fm.get('superseded_by'):
+                    errors.append(f'{rel}: {fm["status"]} without `superseded_by`')
                 stale = fm.get('stale_after')
                 if stale:
                     try:
@@ -87,12 +129,17 @@ def main(argv):
             if not path:
                 continue
             resolved = (page.parent / path).resolve()
+            live = rel.parts[0] not in ('archive', 'log.md')
             if resolved.exists():
                 if resolved in inbound:
                     inbound[resolved] += 1
-            elif rel.parts[0] != 'archive':
-                # Archived bodies are immutable and describe the past; their
-                # stale links are expected and not reported.
+                # A decision chain links to what it replaced; everything else
+                # live should state and cite the replacement instead.
+                if live and retired_decision(meta.get(resolved)) and (fm or {}).get('type') != 'Decision':
+                    warnings.append(f'{rel}: links to superseded decision {target}; cite its replacement')
+            elif live:
+                # Archived bodies and the log describe the past; their stale
+                # links are expected and not reported.
                 errors.append(f'{rel}: broken link -> {target}')
     for page in pages:
         if page.name in RESERVED or page.parent == wiki:
@@ -105,6 +152,7 @@ def main(argv):
     for page, count in inbound.items():
         if count == 0 and page.name not in RESERVED and page.parent != wiki:
             warnings.append(f'{page.relative_to(wiki)}: orphan (no inbound links)')
+    decision_references(wiki, meta, errors, warnings)
     for line in warnings:
         print('warning:', line)
     for line in errors:
