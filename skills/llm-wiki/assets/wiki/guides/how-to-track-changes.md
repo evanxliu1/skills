@@ -40,7 +40,17 @@ Working memory. Rewritten in place at the end of every session: current branch a
 
 ## 4. Decision records
 
-Any non-obvious choice by the user or an agent gets a page in `decisions/`, dated, with the sections **Context**, **Options considered**, **Decision**, **Consequences**, **Status** (`accepted`, `superseded by …`, `reversed`). Decisions are not edited after acceptance except their status line; a change of mind is a new record that supersedes the old one. Standing user instructions are also summarised in [`product/user-directives.md`](../product/user-directives.md), which links to the decision that established each.
+Any non-obvious choice by the user or an agent gets a page in `decisions/`, dated, with the sections **Context**, **Options considered**, **Decision**, **Consequences**, **Status** (`accepted`, `superseded by …`, `reversed`). Decisions are not edited after acceptance except their status line and a **Supersedes** section added when an older record is retired; a change of mind is a new record that supersedes the old one. Standing user instructions are also summarised in [`product/user-directives.md`](../product/user-directives.md), which links to the decision that established each.
+
+## Superseding a decision
+
+A reversed decision that is still stated somewhere is the most damaging thing a wiki can hold: the next agent follows it. When a choice replaces an earlier one, do all of this in the same change:
+
+1. Write the new record with a **Supersedes** section: the old record and one line on why it was dropped.
+2. Retire the old record per the retention directive in [user directives](../product/user-directives.md). *Archive*: set `status: superseded` and `superseded_by`, `git mv` it to `archive/`, move its index entry to `archive/index.md`. *Delete*: `git rm` it; the new record's Supersedes line and git are the trace.
+3. Find every dependent: `grep -rn <old-record-filename> .`, then grep the old choice in words (option name, config key, value) across `wiki/`, `AGENTS.md` and code comments. Rewrite each to state the new choice and cite the new record. Remove any inline "until X we did Y" history.
+4. Replace the old row in `user-directives.md` and the rule in `AGENTS.md` if the choice was a directive. Update `decisions/index.md` and `now.md`.
+5. Log one `Decision` bullet naming both records (old one in backticks if deleted). Run the linter: it fails on references to a deleted record and warns on links to a superseded one.
 
 ## Wiki changes ride with code changes
 

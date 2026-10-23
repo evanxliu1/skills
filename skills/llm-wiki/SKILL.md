@@ -53,6 +53,7 @@ Ask only what you cannot infer, and give a recommended default for each question
    - `reviews/` holds audits and code reviews. Recommend it for anything multi-person or long-lived.
 3. **Standing rules.** Things agents must never or always do here, such as no secrets, never editing applied migrations, or approval needed before deploys. These seed the project rules in `AGENTS.md` and `product/user-directives.md`.
 4. **Tools in use** (Claude Code, Codex, Cursor, others), so you wire the right entry files. If unsure, wire all three; the cost is two tiny files.
+5. **Retention.** When a page is retired or a decision is replaced, should the old version be *deleted* (git history and the superseding record are the trace) or *archived* under `wiki/archive/`? Recommend delete for most repos: agents read a lean wiki best, and git keeps everything. Docs moved in by a migration (step 5) are archived either way, because the user chose to keep them.
 
 If the user has already answered some of these, don't ask them again.
 
@@ -76,7 +77,7 @@ The scaffold gives structure; the value is in content that is true. Read the cod
 | Page | Must contain |
 | --- | --- |
 | `product/goal.md` | Why the project exists, who uses it, what success means, non-goals. One screen. |
-| `product/user-directives.md` | The standing rules from the interview, dated, newest first. Setup choices (which tools, which optional folders, greenfield vs migrate) are configuration, not directives; leave them out. |
+| `product/user-directives.md` | The standing rules from the interview, dated, newest first, including the retention choice (it governs every future session). Other setup choices (which tools, which optional folders, greenfield vs migrate) are configuration, not directives; leave them out. |
 | `system/architecture.md` | Components, how they talk, where they run, data stores. A table or simple diagram beats prose. |
 | `system/code-map.md` | Every top-level module or package: path, what it owns, key entry symbols, its tests. |
 | `ops/local-setup.md` | Exact commands to install, run, test and build, copied from what actually works. Run the commands if it is safe and cheap. |
@@ -137,7 +138,11 @@ These come from running this setup on a real project; each one prevents a specif
 - **The wiki owns *why* and *what was agreed*; the code owns *behavior*.** When they disagree, the code wins and the wiki gets fixed in the same change. Without this rule, docs rot into confident fiction.
 - **One owner per fact.** A second copy of a fact will eventually disagree with the first. Other pages link to the owner.
 - **Absolute UTC dates everywhere.** "Recently" and "last week" are meaningless to the next session.
-- **Nothing is deleted; superseded material is archived.** Agents and humans can then trace why a choice was made, and old reasoning is never silently rewritten.
+- **Live pages state only the current truth.** When a decision changes, the new record says what it replaced and why, and every live mention of the old choice is rewritten in the same change. History lives in the decision chain, `log.md` and git. Inline "until X we did Y" notes are how a wiki bloats into contradictions.
+- **Retired material leaves the live wiki.** It is deleted or archived according to the repo's retention directive. Docs archived during a migration stay immutable.
+- **Decisions are cited, not restated.** Code comments and pages that depend on a choice link to its record (`wiki/decisions/…`) instead of copying it or calling it permanent. A reversal then has one place to change, and the linter finds every dependent.
 - **`now.md` is short and rewritten; `log.md` is long and append-only.** Mixing them buries the current state under history.
 - **Mechanical checks belong to the linter; semantic checks belong to an agent's lint pass.** Don't try to make the script judge prose.
 - **Match the repo's density and tone.** Terse codebase, terse pages.
+
+To clean up a wiki that already exists (reversed decisions still stated as current, duplicated facts), use the `llm-wiki-audit` skill.

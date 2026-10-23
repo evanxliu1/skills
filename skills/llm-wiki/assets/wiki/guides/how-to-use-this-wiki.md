@@ -38,7 +38,7 @@ This directory is the project's long-term memory. It follows Karpathy's LLM-wiki
 | `decisions/` | Dated decision records with context, options, outcome | Why things are the way they are |
 | `reviews/` | Audits and code reviews with findings and verdicts (optional) | Evaluations |
 | `guides/` | These four pages | Schema |
-| `archive/` | Superseded documents and retired pages, immutable | Raw sources and history |
+| `archive/` | Pre-wiki documents and, if the repo archives, retired pages; immutable | Raw sources and history |
 
 Everything outside `wiki/` that is still documentation (`README.md`, `CONTRIBUTING.md`, `SECURITY.md`, the `AGENTS.md`/`CLAUDE.md` files) is a thin entry point that links here.
 
@@ -48,7 +48,7 @@ Everything outside `wiki/` that is still documentation (`README.md`, `CONTRIBUTI
 
 **Ingest.** New knowledge arrives as a user statement, an external document, a provider check, a review, or a code change. Fold it into the pages that own the concept (update, do not duplicate), record the source in `sources`, bump `generated.at`, add a decision record if a choice was made, append to `log.md`, and adjust `now.md`. A single ingest often touches several pages; that is expected.
 
-**Lint.** Run `python3 scripts/lint_wiki.py` for mechanical checks (frontmatter, links, index coverage, orphans, log order, stale dates, unfinished `TODO(llm-wiki)` markers). Periodically ask an agent to lint semantically: contradictions between pages, claims the code no longer supports, concepts mentioned in three places but owned by none, pages nobody links to. Fix what you find and log it as a `Lint` entry.
+**Lint.** Run `python3 scripts/lint_wiki.py` for mechanical checks (frontmatter, links, index coverage, orphans, log order, stale dates, unfinished `TODO(llm-wiki)` markers). Periodically ask an agent to lint semantically: contradictions between pages, claims the code no longer supports, concepts mentioned in three places but owned by none, pages nobody links to. Above all, look for reversed decisions still stated as current in pages or code comments. Fix what you find and log it as a `Lint` entry. The `llm-wiki-audit` skill runs this pass where it is installed.
 
 ## Where facts go
 
@@ -57,7 +57,7 @@ Everything outside `wiki/` that is still documentation (`README.md`, `CONTRIBUTI
 - Something the user authorized, forbade or preferred: `product/user-directives.md` (dated) and, if it was a real choice among options, a `decisions/` record.
 - A procedure someone will repeat: `ops/`.
 - A verified fact with an expiry (deployment IDs, plan limits, entitlements, versions): the owning page with `stale_after` set.
-- Anything superseded: `archive/` via the [archive policy](archive-policy.md).
+- Anything superseded: out of the live pages, deleted or archived per the [retention policy](archive-policy.md).
 
 ## For humans
 

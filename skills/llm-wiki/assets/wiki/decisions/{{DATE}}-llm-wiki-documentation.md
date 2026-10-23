@@ -37,7 +37,7 @@ sources:
 - `AGENTS.md` is the schema and behavioral contract for every tool; `CLAUDE.md` imports it.
 - Cursor has an `alwaysApply` rule in `.cursor/rules/agents.mdc` pointing at `AGENTS.md`. <!-- if:cursor -->
 - Agents follow the session protocol: read `now.md` and `index.md` first; finish by updating `now.md`, `log.md`, affected pages and decision records.
-- Superseded documents are archived verbatim under `wiki/archive/`; nothing is deleted.
+- Live pages state only the current truth. Retired pages and superseded decisions are <deleted | archived under `wiki/archive/`> per the retention directive; pre-wiki documents are archived verbatim. Code and pages cite decisions by link instead of restating them. <!-- TODO(llm-wiki): fill in the retention choice. -->
 - `scripts/lint_wiki.py` enforces structure in the pre-commit hook and CI where available.
 
 ## Consequences

@@ -22,8 +22,8 @@ The project's long-term memory. Start with [`now.md`](now.md), then the director
 * [ops/](ops/index.md) — runbooks: setup, deploy, maintenance.
 * [decisions/](decisions/index.md) — dated decision records with context, options, decision, consequences, status.
 * [reviews/](reviews/index.md) — audits and code reviews. <!-- if:reviews -->
-* [guides/](guides/index.md) — how to use, document, track changes, archive.
-* [archive/](archive/index.md) — immutable superseded documents.
+* [guides/](guides/index.md) — how to use, document, track changes, retire material.
+* [archive/](archive/index.md) — immutable archived documents.
 
 ## Outside the wiki
 
